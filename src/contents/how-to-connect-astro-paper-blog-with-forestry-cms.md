@@ -4,7 +4,7 @@ author: Sat Naing
 datetime: 2022-09-21T05:17:19Z
 slug: how-to-connect-astro-paper-blog-with-forestry-cms
 featured: true
-draft: false
+draft: true
 tags:
   - docs
   - forestry-cms
