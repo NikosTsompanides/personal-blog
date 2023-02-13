@@ -3,8 +3,8 @@ import type { SocialObjects } from "./types";
 export const SITE = {
   website: "https://nikos-tsompanidis.netlify.app/",
   author: "Nikos Tsompanidis",
-  desc: "Personal blog of Nikos Tsompanidis",
-  title: "N. Tsompanidis",
+  desc: "I'm Nikos Tsompanidis, a Fullstack Software Engineer with 5+ years of experience in designing, implementing, testing, maintaining and releasing software systems that scale. I'm proficient in Javascript/Typescript as well as in cutting-edge technologies for web development such as Vuejs/ReactJs, Nodejs, Typescript, Express, PostgreSQL/MySQL/MongoDB, GraphQL and Restful APIs.",
+  title: "N. Tsompanidis | Personal Blog",
   lightAndDarkMode: true,
   postPerPage: 3,
 };
