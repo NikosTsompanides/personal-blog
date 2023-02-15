@@ -8,7 +8,7 @@ draft: false
 tags:
   - functional programming
   - programming
-ogImage: ""
+ogImage: "https://pewylbljypgmyciygfsg.supabase.co/storage/v1/object/public/photos/nikos-tsompanidis-blog-ogImage.webp?t=2023-02-15T11%3A15%3A40.300Z"
 description:
   Functional programming emphasizes immutability, declarative code and side-effect avoidance for easier-to-understand, bug-free code. Learn the fundamentals and start your journey to becoming a functional programmer.
 ---
