@@ -1,36 +1,42 @@
 ---
 author: Nikos Tsompanidis
-datetime: 2023-02-20T18:00:00Z
+datetime: 2023-03-11T09:00:00Z
 title: Introduction to Functional Programming (Part 2)
 slug: introduction-to-functional-programming-part-2
 featured: true
-draft: true
+draft: false
 tags:
   - functional programming
   - programming
 ogImage: "https://pewylbljypgmyciygfsg.supabase.co/storage/v1/object/public/photos/nikos-tsompanidis-blog-ogImage.webp?t=2023-02-15T11%3A15%3A40.300Z"
-description: In this blog, we will explain the concepts of immutability, side effects, and functional composition by providing examples using the TypeScript language. Let's have some fun!
+description: In this post, we will explain the concepts of immutability, side effects, and functional composition by providing examples using the TypeScript language. Let's have some fun!
 ---
 
 # Introduction to Functional Programming (Part 2)
 
-Functional programming is a programming paradigm that emphasizes _immutability_, _side effect avoidance_, and _functional composition_ to create software that is easier to reason about, test, and maintain. Immutability ensures that once a data structure is created, it cannot be modified, thus preventing unexpected changes in the program's state. Side effect avoidance minimizes the impact of a function on the overall system state, reducing bugs and making code more predictable. Functional composition enables building more complex behavior from small, composable functions, increasing modularity and reducing coupling between different parts of the code. By embracing these concepts, developers can write more reliable and scalable software. Allow me to elaborate further on the three fundamental concepts of functional programming in the following paragraphs.
+Functional programming is a programming paradigm that emphasizes _immutability_, _side effect avoidance_, and _functional composition_ to create software that is easier to reason about, test, and maintain.
+
+Immutability ensures that once a data value is created, it cannot be modified, thus preventing unexpected changes in the program's state.
+
+Side effect avoidance minimizes the impact of a function on the overall system state, reducing bugs and making code more predictable.
+
+Functional composition enables building more complex behavior from small, composable functions, increasing modularity and reducing coupling between different parts of the code.
+
+By embracing these concepts, developers can write more reliable and scalable software. Allow me to elaborate further on the three fundamental concepts of functional programming in the following paragraphs.
 
 ## Immutability
 
-In software engineering, an immutable value is a value that cannot be changed once it has been created. Immutable values are used to ensure that the state of an object remains the same throughout its lifetime.
-
-In programming, values that are immutable are often implemented as objects that cannot be modified after they have been created. This means that any attempt to change the value of the object will result in a new object being created with the new value, rather than modifying the original object.
+Immutability is a concept in software engineering that refers to the state of an object or data structure that cannot be modified after it has been created.
 
 Immutable values have several benefits, including:
 
-1. Thread safety: Since immutable values cannot be modified, they are inherently thread-safe. Multiple threads can access and read the same value without worrying about race conditions or other synchronization issues
+1. Thread-safety: Immutable objects are inherently thread-safe because they cannot be modified after they have been created. This eliminates the need for locking mechanisms that can slow down system performance and create concurrency issues.
 
-2. Predictability: Immutable values are predictable since they cannot be changed once they have been created. This makes it easier to reason about code and reduces the potential for bugs.
+2. Improved performance: Immutable objects can be cached and reused because they have a fixed state that does not change. This can reduce the amount of memory allocated and the number of objects created, resulting in improved performance.
 
-3. Performance: Immutable values can be cached and reused, improving performance by reducing the need for costly object creation and garbage collection.
+3. Safer concurrency: Immutable objects eliminate race conditions and other concurrency issues that can arise when multiple threads attempt to modify the same object simultaneously.
 
-Examples of immutable values in programming include primitive data types such as integers and booleans, as well as objects like strings and tuples that cannot be modified after they are created.
+4. Predictability: Immutable values are predictable since they cannot be changed once they have been created. This makes it easier to reason about code and reduces the potential for bugs.
 
 In JavaScript, there are several ways to define immutable values. One way is to use primitive data types such as numbers, strings, and booleans, which are immutable by default. Another way is to use object literals or classes that are designed to be immutable.
 
@@ -54,7 +60,7 @@ const person = Object.freeze({
 });
 ```
 
-In Typescript, in order to define an immutable property inside an object or a tuple you can use the [`readonly` keyword](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#readonly-and-const). Please have in mind that Typescript is a language that compiles to Javascript and the `readonly` does not actually guarantees you that you value will be immutable. Yes, if you'll try to mutate the value of a readonly property the compiler will throw an error but do not take that as granted if you do not use the `Object.freeze` function.
+In Typescript, in order to define an immutable property inside an object or a tuple you can use the [`readonly` keyword](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#readonly-and-const). Please have in mind that Typescript is a language that compiles to Javascript and the `readonly` does not actually guarantees you that you value will be immutable. Yes, if you'll try to mutate the value of a readonly property the compiler will throw an error but do not take that as granted.
 
 Now that we learn about immutability let's define what a side effect is and learn how to avoid them.
 
@@ -111,7 +117,7 @@ Here are some common techniques for handling side effects in functional programm
 
 1. Pure functions: Writing pure functions that don't cause side effects is the easiest way to avoid side effects altogether. Pure functions only rely on their inputs and produce a predictable output, making them easy to reason about and test.
 
-2. Monads: Monads are a design pattern used in functional programming to isolate side effects and encapsulate them in a controlled way. They provide a way to separate the functional, "pure" part of a program from the effectful, "impure" part. We will see defined what a Monad is in other post sto stay tuned!
+2. Monads: Monads are a design pattern used in functional programming to isolate side effects and encapsulate them in a controlled way. They provide a way to separate the functional, "pure" part of a program from the effectful, "impure" part. We will explore such Monads in other posts so stay tuned!
 
 3. Higher-order functions: Higher-order functions are functions that take other functions as arguments or return functions as their result. They can be used to encapsulate side effects into smaller, more manageable functions.
 
@@ -152,7 +158,7 @@ Functional composition is a powerful technique that allows us to create complex 
 
 #### Fp-ts to the rescue
 
-Fortunately for us, [Giulio Canti](https://github.com/gcanti) has created an excellent library called [fp-ts]('https://github.com/gcanti/fp-ts') which aims to allow developers to use popular patterns and abstractions that are available in most functional languages in Typescript. We will use extensively the fp-ts library in the following posts when we will explain some of the core concepts of the Category Theory. Now lets use the `pipe` function that fp-ts provides us with in order to write a more readable and easy-to-maintain program.
+Fortunately for us, [Giulio Canti](https://github.com/gcanti) has created an excellent library called [fp-ts]('https://github.com/gcanti/fp-ts') which aims to allow developers to use popular patterns and abstractions that are available in most functional languages, in Typescript. We will use extensively the fp-ts library in the following posts when we will explain some of the core concepts of the Category Theory. Now lets use the `pipe` function that fp-ts provides us with in order to write a more readable and easy-to-maintain program.
 
 ```ts
 import { pipe, flow } from "fp-ts/functions";
