@@ -1,7 +1,7 @@
 ---
 import { SITE } from "src/config";
 import "../styles/base.css";
-
+import GoogleAnalytics from "../components/GoogleAnalytics.astro";
 const googleSiteVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export interface Props {
@@ -31,6 +31,7 @@ const socialImageURL = new URL(
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <GoogleAnalytics />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/assets/avatar.png" />
