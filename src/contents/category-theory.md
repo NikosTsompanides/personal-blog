@@ -1,10 +1,10 @@
 ---
 author: Nikos Tsompanidis
-datetime: 2023-02-11T09:00:00Z
+datetime: 2023-04-02T09:00:00Z
 title: Introduction to Category Theory
 slug: introduction-to-category-theory
 featured: true
-draft: true
+draft: false
 tags:
   - functional programming
   - programming
@@ -41,8 +41,7 @@ There is also, an operation, `∘`, called "composition", such as the following 
 ![composition](https://pewylbljypgmyciygfsg.supabase.co/storage/v1/object/public/photos/composition.png?t=2023-04-03T14%3A36%3A26.403Z)
 
 - **Associativity**: if `f: A ⟼ B`, `g: B ⟼ C` and `h: C ⟼ D` then `h ∘ (g ∘ f) = (h ∘ g) ∘ f`
-
-![associativity][https://pewylbljypgmyciygfsg.supabase.co/storage/v1/object/public/photos/associativity.png?t=2023-04-03T14%3A36%3A21.863Z]
+  ![associativity](https://pewylbljypgmyciygfsg.supabase.co/storage/v1/object/public/photos/associativity.png?t=2023-04-03T14%3A36%3A21.863Z)
 
 - **Identity**: for every object X, there is a morphism called identity: `X ⟼ X` such as for every morphism `f: A ⟼ X` and `g: X ⟼ B`, the following equation holds true `identity ∘ f = f` and `g ∘ identity = g`.
 

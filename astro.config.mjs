@@ -7,6 +7,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://nikos-tsompanidis.netlify.app/",
   integrations: [
     tailwind({
       config: {
