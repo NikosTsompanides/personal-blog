@@ -23,12 +23,12 @@ export const SOCIALS: SocialObjects = [
     linkTitle: ` ${SITE.title} on Github`,
     active: true,
   },
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=100008309835480",
-    linkTitle: `${SITE.title} on Facebook`,
-    active: true,
-  },
+  // {
+  //   name: "Facebook",
+  //   href: "https://www.facebook.com/profile.php?id=100008309835480",
+  //   linkTitle: `${SITE.title} on Facebook`,
+  //   active: true,
+  // },
   // {
   //   name: "Instagram",
   //   href: "https://www.instagram.com/nikostsompanides/",
