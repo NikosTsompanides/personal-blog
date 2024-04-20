@@ -39,14 +39,7 @@ const ogUrl = new URL(ogImage ? ogImage : `${title}.svg`, Astro.url.origin)
     <article id="article" role="article" class="mx-auto max-w-3xl mt-8 prose">
       <Content />
     </article>
-    <div class="text-lext">
-      <h3 class="text-xl my-4">if you liked this post:</h3>
-      <a href="https://www.buymeacoffee.com/n.tsompanidis"
-        ><img
-          src="https://img.buymeacoffee.com/button-api/?text=Buy me a beer&emoji=🍻&slug=n.tsompanidis&button_colour=1AD9D9&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00"
-        /></a
-      >
-    </div>
+    
 
     <ul class="tags-container">
       {tags.map(tag => <Tag name={tag} />)}
