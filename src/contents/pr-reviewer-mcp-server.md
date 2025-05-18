@@ -1,6 +1,6 @@
 ---
 author: Nikos Tsompanidis
-datetime: 2025-05-27T18:00:00Z
+datetime: 2025-04-27T18:00:00Z
 title: "Enhancing the PR Reviewer CLI: Now with MCP Server Support 🎉"
 slug: pr-reviewer-mcp-server-support
 featured: true
