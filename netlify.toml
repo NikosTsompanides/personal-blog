@@ -1,0 +1,12 @@
+# Build settings live here rather than in the Netlify dashboard, so they are
+# reviewable and cannot drift without a commit.
+#
+# `publish` must be relative. An absolute value makes the build fail with
+# "destinationDir must be a relative path", because Netlify resolves it against
+# the repo root and ends up with /opt/build/repo/dist/.
+#
+# The build command is deliberately not set here: this repo installs with pnpm,
+# and pinning the command would change two things at once while the deploy is
+# still being diagnosed.
+[build]
+  publish = "dist"
