@@ -29,36 +29,80 @@ So I wrote the smallest thing that gives me the two properties I actually use da
 
 ## Two Properties, Three Types
 
-`Result<A, E>` makes failure part of the type. Nothing throws, so a validation chain reads as a straight line instead of a ladder of early returns:
+`Result<A, E>` makes failure part of the type. A function that can fail returns the failure instead of throwing it, so the signature stops lying:
 
 ```ts
-const loadConfig = (env: Env): Result<Config, ConfigError> =>
-  required(env, "PORT")
-    .flatMap(asPort)
-    .flatMap(port => required(env, "DATABASE_URL").map(url => ({ port, url })));
+class ConfigError extends Error {}
+
+const parsePort = (raw: string | undefined): Result<number, ConfigError> => {
+  if (!raw) return Result.err(new ConfigError("PORT is missing"));
+  const port = Number(raw);
+  return Number.isInteger(port) && port > 0 && port < 65536
+    ? Result.ok(port)
+    : Result.err(new ConfigError(`PORT is not a port: ${raw}`));
+};
 ```
 
-The first failure skips everything after it. The caller decides whether a bad config should end the process, which means the parser stays reusable and testable.
+Composing those is where it pays off. `flatMap` short-circuits, so a bad port means `DATABASE_URL` is never read at all, and there is no nesting and no ladder of early returns:
+
+```ts
+const loadConfig = (env: NodeJS.ProcessEnv): Result<Config, ConfigError> =>
+  parsePort(env.PORT).flatMap(port =>
+    parseUrl(env.DATABASE_URL).map(databaseUrl => ({ port, databaseUrl }))
+  );
+```
+
+Nothing above decides what a failure _means_. That happens once, at the edge, and it is the only place in the program that branches on it:
+
+```ts
+loadConfig(process.env).run(
+  config => startServer(config),
+  error => {
+    console.error(error.message);
+    process.exit(1);
+  }
+);
+```
+
+Which is the actual win. The parser stays reusable and testable because it never reaches for `process.exit` or a logger, and a test asserts on a returned value rather than on a thrown exception.
 
 `AsyncResult<A, E>` is the same idea wrapped around `() => Promise<Result<A, E>>`. Building a chain runs nothing. Calling `run` starts the work.
 
-`Computation<R, A>` is the entire dependency injection story, and it is eleven lines:
+`Computation<R, A>` is the entire dependency injection story, and its [implementation is eleven lines](https://github.com/NikosTsompanides/pragmatic-effects/blob/main/src/Computation.ts). What matters is how it reads at the call site. Here is a subscription check that names what it needs and imports none of it:
 
 ```ts
-export class Computation<R, A> {
-  private constructor(private readonly computation: (dependencies: R) => A) {}
-
-  static create<R, A>(fn: (dependencies: R) => A): Computation<R, A> {
-    return new Computation(fn);
-  }
-
-  provide(dependencies: R): A {
-    return this.computation(dependencies);
-  }
+interface Deps {
+  now: () => Date;
+  findSubscription: (userId: string) => { expiresAt: Date } | null;
 }
+
+const checkAccess = (userId: string) =>
+  Computation.create((deps: Deps): Result<string, Error> => {
+    const subscription = deps.findSubscription(userId);
+    if (!subscription) return Result.err(new Error("no subscription"));
+    return subscription.expiresAt > deps.now()
+      ? Result.ok("active")
+      : Result.err(new Error("subscription expired"));
+  });
 ```
 
-Strip away the ceremony and dependency injection is just **a function that has not been called yet**, held as a value. You write the logic against an interface and hand it the real clock and database in production, or fixed ones in a test. Testing an expiry boundary needs no fake timers, because the clock was never a global to begin with.
+No clock import, no database import, no container. Creating that runs nothing. You hand it the real world at the boundary:
+
+```ts
+checkAccess("u1").provide({ now: () => new Date(), findSubscription: db.find });
+```
+
+And the test for the expiry boundary, which is the case I always used to get wrong, becomes ordinary. No fake timers, no module mocking, no clock to freeze:
+
+```ts
+const expired = checkAccess("u1").provide({
+  now: () => new Date("2026-06-01"),
+  findSubscription: () => ({ expiresAt: new Date("2026-05-31") }),
+});
+// Err("subscription expired")
+```
+
+Strip away the ceremony and dependency injection is just **a function that has not been called yet**, held as a value. The clock was never a global, so there is nothing to reach in and replace.
 
 Eleven lines replaced the part of my job I disliked most. That result is either encouraging or embarrassing, and I still cannot decide which.
 
@@ -129,3 +173,5 @@ I want to be honest about the boundary, because "I wrote my own" ages badly when
 If I find myself needing interruption, resource safety with scoped acquisition and release, fibers, or generator-based do-notation to keep the chains readable, then I am no longer writing a small utility. **I am writing a worse Effect**, and Effect already exists and is maintained by people who think about this full time. Reimplementing it badly is a much worse outcome than paying the learning cost up front.
 
 Until then, the trade is holding. 284 lines of source, 765 lines of tests, and nobody has to learn a new vocabulary to fix a bug. The two things that bothered me have stopped bothering me, and the ceiling is close enough that I will know when I hit it.
+
+The source, the tests and a set of runnable examples are on GitHub at [NikosTsompanides/pragmatic-effects](https://github.com/NikosTsompanides/pragmatic-effects). It is small enough to read in one sitting, which was rather the point.
