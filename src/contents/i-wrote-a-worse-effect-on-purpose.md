@@ -106,6 +106,71 @@ Strip away the ceremony and dependency injection is just **a function that has n
 
 Eleven lines replaced the part of my job I disliked most. That result is either encouraging or embarrassing, and I still cannot decide which.
 
+## Ports, Adapters and a Command
+
+Put the two properties together and you land on hexagonal architecture almost by accident. A port is just an interface, and because its async methods return `AsyncResult`, failure is part of the contract rather than a footnote in a docstring:
+
+```ts
+interface OrderPort {
+  findById: (id: string) => AsyncResult<Order, OrderNotFound>;
+  save: (order: Order) => AsyncResult<void, PersistenceError>;
+}
+```
+
+The domain rule stays synchronous and pure, which is what `Result` is for:
+
+```ts
+const applyPercent = (
+  order: Order,
+  percent: number
+): Result<Order, InvalidDiscount> =>
+  percent > 0 && percent <= 50
+    ? Result.ok({ ...order, total: order.total * (1 - percent / 100) })
+    : Result.err(new InvalidDiscount(percent));
+```
+
+The command wires them together and returns a `Computation` that needs the port. It imports nothing from infrastructure:
+
+```ts
+const discountOrder = (id: string, percent: number) =>
+  Computation.create((orders: OrderPort) =>
+    orders
+      .findById(id)
+      .flatMap(order => AsyncResult.fromResult(applyPercent(order, percent)))
+      .flatMap(discounted => orders.save(discounted).map(() => discounted))
+  );
+```
+
+`fromResult` is the join between the two types, lifting a synchronous `Result` into an async chain. An invalid discount means `save` is never reached, and that is a consequence of the types rather than of my remembering to return early. The error channel widens as you compose, so the chain ends up as `AsyncResult<Order, OrderNotFound | InvalidDiscount | PersistenceError>` without anyone writing that union down.
+
+Adapters sit at the edge and are the only code that knows a network exists:
+
+```ts
+const httpOrders = (): OrderPort => ({
+  findById: id =>
+    AsyncResult.fromAsync(() => api.getOrder(id)).mapErr(
+      cause => new OrderNotFound(id, { cause })
+    ),
+
+  save: order =>
+    AsyncResult.fromAsync(() => api.putOrder(order)).mapErr(
+      cause => new PersistenceError({ cause })
+    ),
+});
+```
+
+This is where that earlier trade pays for itself. `fromAsync` hands back an `AsyncResult<A, Error>` because it genuinely cannot know what a failed HTTP call means to your domain. The adapter does know, and `mapErr` is where it says so, keeping `cause` so the original is not lost.
+
+Then the same command runs against whichever adapter you give it:
+
+```ts
+discountOrder("o-1", 10).provide(httpOrders());
+
+discountOrder("o-1", 10).provide(inMemoryOrders([{ id: "o-1", total: 200 }]));
+```
+
+No mocking framework and no module interception. The test double is another implementation of the port, and the thing under test is the same object in both cases.
+
 ## Four Things I Got Wrong
 
 The library works. Getting there taught me more than the library itself is worth, so here is the part that might actually be useful to you.
